@@ -1,5 +1,5 @@
 const express = require("express");
-
+const passport = require("passport")
 const Profiles = require("../models/profileSchema");
 const multer = require("multer");
 const path = require("path");
@@ -7,7 +7,7 @@ const fs = require("fs-extra");
 const profileRouter = express.Router();
 const generatePDF = require("../pdfConfig/pdfCreator");
 const json2csv = require("json2csv").parse;
-
+const mongoose = require("mongoose")
 
 
 //  profileRouter.get("/", Profile.getAll);
@@ -49,15 +49,25 @@ profileRouter.get("/:id", async (req, res) => {
     }
 });
 
-profileRouter.get("/username/:username", async (req, res) => {
+profileRouter.get("/username/:username", passport.authenticate("jwt"), async (req, res) => {
     try {
+       
         let username = { username: req.params.username };
         const profile = await Profiles.findOne(username);
-        if (profile) {
-            res.send(profile);
-        } else {
+        if (!profile) {
             res.status(404).send("Cannot find the profile with the username");
+           
         }
+
+
+          const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+          if(!stringifiedID.equals(req.user._id)){
+            return res.status(401).send("You can only view your profile")
+            
+          }
+
+          res.send(profile);
+
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
@@ -134,11 +144,13 @@ profileRouter.get("/get/CSV/:username/experiences", async (req, res) => {
     }
 });
 
-profileRouter.post("/", async (req, res) => {
+profileRouter.post("/",passport.authenticate("jwt"), async (req, res) => {
     // let newInfo = {...req.body,
     //     createdAt: new Date()}
 
     try {
+        req.body.userId = req.user._id
+
         const newProfile = await Profiles.create(req.body);
 
         newProfile.save();
@@ -152,9 +164,19 @@ profileRouter.post("/", async (req, res) => {
 const multerConfig = multer({});
 profileRouter.post(
     "/:username/picture",
-    multerConfig.single("profileImg"),
+    multerConfig.single("profileImg"), passport.authenticate("jwt"), 
     async (req, res) => {
         try {
+            
+    
+          const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+          if(!stringifiedID.equals(req.user._id)){
+            return res.status(401).send("You can only edit your profile")
+            
+          }
+    
+
+
             const fileName =
                 req.params.username + path.extname(req.file.originalname);
 
@@ -179,32 +201,56 @@ profileRouter.post(
     }
 );
 
-profileRouter.put("/:id", async (req, res) => {
-    delete req.body._id;
+profileRouter.put("/:id", passport.authenticate("jwt"), async (req, res) => {
+  delete req.body._id;
 
-    try {
-        const profileForEdit = await Profiles.findByIdAndUpdate(req.params.id, {
-            $set: {
-                ...req.body,
-                updatedAt: new Date()
-            }
-        });
-
-        if (profileForEdit) {
-            res.send("Updated!");
-        } else {
-            res.status(404).send(
-                `profile with id: ${req.params.id} is not found !`
-            );
-        }
-    } catch (error) {
-        console.log(error);
-        res.status(500).send(error);
+  try {
+    const user = await Profiles.findById(req.params.id);
+    if (!user) {
+      return res.status(404).send("not found");
     }
+
+    const stringifiedID = new mongoose.Types.ObjectId(req.user._id);
+    if (!stringifiedID.equals(req.user._id)) {
+      return res.status(401).send("You can only edit your profile");
+    }
+
+    const profileForEdit = await Profiles.findByIdAndUpdate(req.params.id, {
+      $set: req.body
+
+      //   $set: {
+
+      //     // ...req.body,
+      //     // updatedAt: new Date()
+      //   }
+    });
+
+    res.send(profileForEdit);
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
 });
 
-profileRouter.delete("/:id", async (req, res) => {
+profileRouter.delete("/:id", passport.authenticate("jwt"), async (req, res) => {
     try {
+
+        const user = await Profiles.findById(req.params.id)
+        if(!user){
+            return res.status(404).send("not found")
+        }
+
+      const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+      if(!stringifiedID.equals(req.user._id)){
+        return res.status(401).send("You can only edit your profile")
+        
+      }
+
+
+
+
+
         const deletedProfile = await Profiles.findByIdAndDelete(req.params.id);
 
         if (deletedProfile) res.status(200).send(" Successffully Deleted");
@@ -218,11 +264,22 @@ profileRouter.delete("/:id", async (req, res) => {
     }
 });
 
-profileRouter.post("/experience/:username", async (req, res) => {
+profileRouter.post("/experience/:username", passport.authenticate("jwt"),  async (req, res) => {
     // let newInfo = {...req.body,
     //     createdAt: new Date()}
 
     try {
+        const user = await Profiles.findOne({username:req.params.username})
+        if(!user){
+            return res.status(404).send("user not found")
+        }
+
+      const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+      if(!stringifiedID.equals(req.user._id)){
+        return res.status(401).send("You can only edit your profile")
+        
+      }
+
         const newProject = req.body;
         const addProfileExperience = await Profiles.findOneAndUpdate(
             { username: req.params.username },

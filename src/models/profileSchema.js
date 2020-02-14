@@ -11,7 +11,7 @@ const experienceSchema = new mongoose.Schema({
     company: {
         type: String,
         required: true
-    },
+    }, 
     startDate: {
         type: Date,
         required: true
@@ -67,12 +67,12 @@ const profileSchema = new mongoose.Schema({
 
     bio: {
         type: String,
-        required: true
+        
     },
 
     title: {
         type: String,
-        required: true
+        
     },
 
     area: {
@@ -93,6 +93,8 @@ const profileSchema = new mongoose.Schema({
     },
 
     experience: [experienceSchema],
+
+    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'usersList'}
 
   
 },{timestamps:true});
