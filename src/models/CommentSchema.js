@@ -8,13 +8,13 @@ const schema = {
 
     username: {
         type: mongoose.Schema.Types.String,
-        ref: "Profile",
+        ref: "profiles",
         required: true
     },
 
     post: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
+        ref: "posts",
         required: false
     },
 

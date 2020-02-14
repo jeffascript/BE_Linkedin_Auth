@@ -26,15 +26,15 @@ commentRouter.get("/:postId", async (req, res) => {
 });
 
 //Post Comments
-commentRouter.post("/:postId", async (req, res) => {
+commentRouter.post("/:username/:postId", async (req, res) => {
     try {
         await Profiles.findOne(
-            { username: req.body.username },
+            { username: req.params.username },
             (err, username) => {
                 if (username) {
                     const newComment = Comment.create(
                         {
-                            username: req.body.username,
+                            username: req.params.username,
                             post: req.params.postId,
                             comment: req.body.comment
                         },

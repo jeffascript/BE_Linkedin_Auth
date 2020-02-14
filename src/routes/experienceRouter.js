@@ -80,7 +80,7 @@ experienceRouter.get("/:username/experience/:expId", async (req, res) => {
     }
 });
 
-
+ 
 
 // POST
 experienceRouter.post("/:username/newExperience", async (req, res) => {
@@ -162,7 +162,7 @@ experienceRouter.post(
     async (req, res) => {
         try {
             const fileName =
-                req.params.username + path.extname(req.file.originalname);
+            "expImg_" + req.params.username + path.extname(req.file.originalname);
 
             const newImageLocation = path.join(
                 __dirname,

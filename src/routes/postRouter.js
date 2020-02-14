@@ -15,10 +15,12 @@ postRouter.get("/", async (req, res) => {
     try {
         const posts = await Posts.find({});
 
-        if (posts.length === 0)
-            res.status(404).send({ message: "No posts found" });
-
-        res.send({ Total: postsCount, posts });
+        if (!posts || posts.length <= 0) {
+          res.status(404).send({ message: "No posts found" });
+        } else {
+          res.send({ Total: postsCount, posts });
+        }
+        
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
@@ -28,21 +30,23 @@ postRouter.get("/", async (req, res) => {
 postRouter.get("/:id", async (req, res) => {
     try {
         const post = await Posts.findById(req.params.id);
-        if (!post)
-            res.status(404).send({
-                message: "Post was not found",
-                req: req.params.id
-            });
-
-        res.send(post);
+        if (post) {
+          res.send(post);
+        } else {
+          res.status(404).send({
+            message: "Post was not found",
+            req: req.params.id
+          });
+        }
+         
     } catch (error) {
         res.status(500).send(error);
     }
 });
 
-postRouter.post("/", async (req, res) => {
+postRouter.post("/:username", async (req, res) => {
     try {
-        const { username } = req.body;
+        const { username } = req.params;
 
         const profile = await Profiles.findOne({ username });
 
@@ -55,6 +59,7 @@ postRouter.post("/", async (req, res) => {
 
         res.send({ success: "Post added", newPost });
     } catch (error) {
+        console.log(error)
         res.status(500).send(error);
     }
 });
@@ -66,7 +71,7 @@ postRouter.post(
     async (req, res) => {
         try {
             const fileName =
-                req.params.id + path.extname(req.file.originalname);
+               "post_" + req.params.id + path.extname(req.file.originalname);
 
             const newImageLocation = path.join(
                 __dirname,

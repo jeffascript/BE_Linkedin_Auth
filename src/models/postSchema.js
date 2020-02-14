@@ -2,26 +2,27 @@ const mongoose = require("mongoose");
 
 
 
-const reactionSchema = new mongoose.Schema({
+const reactionSchema = {
     likedBy:  {
           type: String,
-          unique:true
+          unique:true,
+        
       }
-  });
+  };
 
   
 const schema = { 
 
     text: {
         type: String,
-        required: true,
-        unique: true
+        required: true
+        
     },
 
     username: {
         type: mongoose.Schema.Types.String,
-        ref: "Profile",
-        required: true
+        ref: "profiles"
+        
     },
 
     image: {
@@ -34,7 +35,7 @@ const schema = {
     //     default: Date.now,
     //     required: false
     // },
-
+ 
     // updatedAt: {
     //     type: Date,
     //     default: Date.now,

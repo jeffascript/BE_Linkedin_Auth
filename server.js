@@ -44,7 +44,7 @@ server.use("/likes", likesRoute)
 server.use("/comments", commentRoute)
 
 server.get("/", (req,res)=>{
-    res.send("server alive" + new Date ())
+    res.send("server alive " + new Date ())
 })
 
 

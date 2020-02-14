@@ -1,4 +1,4 @@
-const imageDataURI = require("image-data-uri")
+// const imageDataURI = require("image-data-uri")
 
 const pdfTemplate =  (profileToPDF)=>{
     const {imageUrl, firstname, surname, email, bio, title, area, experience} = profileToPDF

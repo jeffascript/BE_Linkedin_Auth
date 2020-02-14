@@ -5,7 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
 const profileRouter = express.Router();
-//const generatePDF = require("../pdfConfig/pdfCreator");
+const generatePDF = require("../pdfConfig/pdfCreator");
 const json2csv = require("json2csv").parse;
 
 
