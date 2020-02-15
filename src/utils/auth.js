@@ -15,7 +15,8 @@ passport.deserializeUser(UsersModel.deserializeUser())
 
  //passport.use(new LocalStrategy(UsersModel.authenticate())) //passport.authenticate("local")
 
-passport.use(UsersModel.createStrategy())
+passport.use(UsersModel.createStrategy())  //alternative forallowing you have a different entry point other than username
+
 
 const jwtOptions = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
