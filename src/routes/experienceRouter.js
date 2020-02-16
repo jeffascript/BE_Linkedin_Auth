@@ -85,6 +85,20 @@ experienceRouter.get("/:username/experience/:expId", async (req, res) => {
 // POST
 experienceRouter.post("/:username/newExperience", async (req, res) => {
     try {
+
+        const user = await Profiles.findOne({username: req.params.username})
+        if(!user){
+            return res.status(404).send("not found")
+        }
+
+
+        const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+        if(!stringifiedID.equals(req.user._id)){
+          return res.status(401).send("You can only edit your experience")
+          
+        }
+
+
         const newExperience = req.body;
         const addProfileExperience = await Profiles.findOneAndUpdate(
             { username: req.params.username },
