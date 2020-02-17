@@ -22,17 +22,19 @@ const mongoose_db = require("./src/db")
 const port = process.env.PORT || 7001
 
 server.use(cors())
-// var whitelist = ['http://localhost:3000', http://localhost:3001']
-// var corsOptions = {
-//   origin: function (origin, callback) {
-//     if (whitelist.indexOf(origin) !== -1) {
-//       callback(null, true)
-//     } else {
-//       callback(new Error('Not allowed by CORS'))
-//     }
-//   }
-// }
 
+/*
+ var whitelist = ['http://localhost:3000', http://localhost:3001']
+ var corsOptions = {
+   origin: function (origin, callback) {
+     if (whitelist.indexOf(origin) !== -1) {
+       callback(null, true)
+     } else {
+       callback(new Error('Not allowed by CORS'))
+     }
+   }
+ }
+*/
 
 server.use(express.static(path.join(__dirname,"./images")))
 
