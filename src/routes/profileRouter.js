@@ -211,6 +211,10 @@ profileRouter.put("/:id", passport.authenticate("jwt"), async (req, res) => {
     }
 
     const stringifiedID = new mongoose.Types.ObjectId(req.user._id);
+    
+    // if (req.user._id.toString() !== req.params.userId && req.user.role !== "Admin")
+    // return res.status(401).send("cannot modify another user")
+    
     if (!stringifiedID.equals(req.user._id)) {
       return res.status(401).send("You can only edit your profile");
     }
