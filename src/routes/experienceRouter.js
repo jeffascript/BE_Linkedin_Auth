@@ -2,7 +2,7 @@ const express = require("express");
 const { check } = require("express-validator");
 const Profiles = require("../models/profileSchema");
 const { ObjectID } = require("mongodb");
-
+const passport = require("passport")
 const multer = require("multer");
 const multerConfig = multer({});
 const path = require("path");
@@ -152,8 +152,13 @@ experienceRouter.put("/:username/:expId", async (req, res) => {
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 
-experienceRouter.delete("/:username/:expId", async (req, res) => {
+experienceRouter.delete("/:username/:expId", passport.authenticate("jwt"),async (req, res) => {
     try {
+
+        if(req.user.username !==req.params.username){
+            res.status(401).send("cannot modify another user")
+        }
+
         await Profiles.findOneAndUpdate(
             { username: req.params.username },
             { $pull: { experience: { _id: req.params.expId } } },
