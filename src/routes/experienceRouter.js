@@ -124,6 +124,11 @@ experienceRouter.post("/:username/newExperience", async (req, res) => {
 
 experienceRouter.put("/:username/:expId", async (req, res) => {
     try {
+
+        if(req.user.username!== req.params.username){
+            res.status(401).send("you can only edit your experience")
+        }
+
         const updateData = req.body;
         const set = {};
 
