@@ -56,15 +56,24 @@ profileRouter.get("/username/:username", passport.authenticate("jwt"), async (re
         const profile = await Profiles.findOne(username);
         if (!profile) {
             res.status(404).send("Cannot find the profile with the username");
-           
+         
+        }
+            // const reqUser = req.user.username
+            // const reqParam = req.params.username
+            //console.log(reqUser +  " is equal to " + reqParam)
+
+            if(req.user.username !==req.params.username){
+            res.status(401).send("cannot modify another user")
         }
 
+        // if (req.user._id.toString() !== req.params.userId && req.user.role !== "Admin")
+        // return res.status(401).send("cannot modify another user")
 
-          const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
-          if(!stringifiedID.equals(req.user._id)){
-            return res.status(401).send("You can only view your profile")
-            
-          }
+        // const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+        // if(!stringifiedID.equals(req.user._id)){
+        // return res.status(401).send("You can only view your profile")
+        // }
+    
 
           res.send(profile);
 
@@ -211,7 +220,7 @@ profileRouter.put("/:id", passport.authenticate("jwt"), async (req, res) => {
     }
 
     const stringifiedID = new mongoose.Types.ObjectId(req.user._id);
-    
+
     // if (req.user._id.toString() !== req.params.userId && req.user.role !== "Admin")
     // return res.status(401).send("cannot modify another user")
     

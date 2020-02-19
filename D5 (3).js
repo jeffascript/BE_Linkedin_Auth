@@ -15,7 +15,9 @@
         - Posts
         - Comments
 
-    - [EXTRA] Facebook
+    - [EXTRA] Facebook,Github
+
+    - EXTRA for me--> Verification with email link
 
     (*) You can only mess with your own stuff. ex.: Post by John can be only be modified by John
     // User wants to modify Post 12345
