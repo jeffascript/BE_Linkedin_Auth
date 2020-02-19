@@ -182,9 +182,15 @@ experienceRouter.delete("/:username/:expId", passport.authenticate("jwt"),async 
 //Image Post Upload
 experienceRouter.post(
     "/:username/:experience/imgUpload",
-    multerConfig.single("imageUrl"),
+    multerConfig.single("imageUrl"),passport.authenticate("jwt"),
     async (req, res) => {
         try {
+
+            if(req.user.username !==req.params.username){
+                res.status(401).send("cannot modify another user experience")
+            }
+
+
             const fileName =
             "expImg_" + req.params.username + path.extname(req.file.originalname);
 
