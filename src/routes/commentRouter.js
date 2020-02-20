@@ -2,6 +2,7 @@ const express = require("express");
 const Comment = require("../models/CommentSchema");
 const Profiles = require("../models/profileSchema");
 const passport = require("passport")
+const mongoose = require("mongoose")
 
 const commentRouter = express.Router();
 
@@ -27,10 +28,14 @@ commentRouter.get("/:postId", async (req, res) => {
 });
 
 //Post Comments
-commentRouter.post("/:username/:postId", async (req, res) => {
+commentRouter.post("/:username/:postId",passport.authenticate("jwt"),async (req, res) => {
     try {
+        if(req.user.username !== req.params.username){
+            res.status(401).send("Sorry, you lack the authorization to make this comment")
+        }
+
         await Profiles.findOne(
-            { username: req.params.username },
+            { username: req.params.username},
             (err, username) => {
                 if (username) {
                     const newComment = Comment.create(
@@ -50,7 +55,7 @@ commentRouter.post("/:username/:postId", async (req, res) => {
                         }
                     );
                 } else {
-                    res.send({ Message: "Username not exist", err });
+                    res.send({ Message: "Username does not exist", err });
                 }
             }
         );
@@ -80,10 +85,16 @@ commentRouter.get("/:postId/comment/:commentId", async (req, res) => {
     }
 });
 
-//Update Single Comment
+//Update Single Comment 
 
-commentRouter.put("/:postId/:commentId", async (req, res) => {
+commentRouter.put("/:postId/:commentId", passport.authenticate("jwt"), async (req, res) => {
     try {
+          const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+         if (!stringifiedID.equals(req.user._id)){
+         res.status(401).send("You do not have the authorization to edit this comment")
+         }
+
+
         const updateComment = await Comment.updateOne(
             {
                 _id: req.params.commentId,
@@ -91,11 +102,12 @@ commentRouter.put("/:postId/:commentId", async (req, res) => {
             },
             { $set: { comment: req.body.comment } }
         );
-        if (updateComment) {
-            res.send({ Message: "Updated", comment: req.body });
-        } else {
+        if (!updateComment) {
             res.status(404).send({ message: "Not found any to update" });
-        }
+        } 
+
+        res.send({ Message: "Updated", comment: req.body });
+
     } catch (err) {
         res.status(500).send(err);
     }
@@ -103,8 +115,15 @@ commentRouter.put("/:postId/:commentId", async (req, res) => {
 
 //Delete Comment
 
-commentRouter.delete("/:postId/:commentId", async (req, res) => {
+commentRouter.delete("/:postId/:commentId",passport.authenticate("jwt"), async (req, res) => {
     try {
+
+        const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+        if (!stringifiedID.equals(req.user._id)){
+        return res.status(401).send("You do not have the authorization to delete this comment")
+        }
+
+
         await Comment.remove(
             { post: req.params.postId, _id: req.params.commentId },
             function(err, comm) {

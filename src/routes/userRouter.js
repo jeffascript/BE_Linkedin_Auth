@@ -11,7 +11,7 @@ usersRouter.post("/register", async(req,res)=>{
     try {
         
         const newUser = await UserModel.register(req.body, req.body.password);
-
+        // const newUser = await UserModel.register(...req.body, {password:bcrypt.hashSync(password, 5)});
         if (newUser) {
           const { firstname, surname, area, email, username } = req.body;
           const newProfile = await Profiles.create({
@@ -37,8 +37,9 @@ usersRouter.post("/register", async(req,res)=>{
          
 
     } catch (err) {
-        res.status(500).send(err)
         console.log(err)
+        res.status(500).send(err)
+        
     }
 })     
         

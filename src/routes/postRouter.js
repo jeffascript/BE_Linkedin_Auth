@@ -1,11 +1,12 @@
 const express = require("express");
-
+const passport = require("passport")
 const Posts = require("../models/postSchema");
 const Profiles = require("../models/profileSchema");
 const multer = require("multer");
 const multerConfig = multer({});
 const path = require("path");
 const fs = require("fs-extra");
+const mongoose = require("mongoose")
 
 const postRouter = express.Router();
 
@@ -44,20 +45,25 @@ postRouter.get("/:id", async (req, res) => {
     }
 });
 
-postRouter.post("/:username", async (req, res) => {
+postRouter.post("/:username", passport.authenticate("jwt"), async (req, res) => {
     try {
         const { username } = req.params;
-
         const profile = await Profiles.findOne({ username });
 
         if (!profile) {
             return res.status(400).send({ Message: "Username not found" });
         }
 
-        let newPost = await Posts.create(req.body);
-        newPost.username = username;
+        if(req.user.username !== username){
+            res.status(401).send({ Message: "Not authorized to post" });
+        }
 
-        res.send({ success: "Post added", newPost });
+        else{
+            let reqUser = {...req.body, username}
+            
+            let newPost = await Posts.create(reqUser);
+            
+        res.send({ success: "Post added", newPost });}
     } catch (error) {
         console.log(error)
         res.status(500).send(error);
@@ -67,9 +73,16 @@ postRouter.post("/:username", async (req, res) => {
 //POST .../api/posts/{postId}
 postRouter.post(
     "/:id/uploadImg",
-    multerConfig.single("image"),
+    multerConfig.single("image"), passport.authenticate("jwt"),
     async (req, res) => {
         try {
+
+            const converted = new mongoose.Types.ObjectId(req.user._id)
+            if(!converted.equals(req.user._id)){
+                res.status(401).send("You do not have the authorization to add image for this post")
+            }  
+
+
             const fileName =
                "post_" + req.params.id + path.extname(req.file.originalname);
 
@@ -104,8 +117,13 @@ postRouter.post(
     }
 );
 
-postRouter.put("/:id", async (req, res) => {
+postRouter.put("/:id",passport.authenticate("jwt"), async (req, res) => {
     try {
+        const converted = new mongoose.Types.ObjectId(req.user._id)
+        if(!converted.equals(req.user._id)){
+            res.status(401).send("You do not have the authorization to add image for this post")
+        }
+
         const postToEdit = await Posts.findByIdAndUpdate(req.params.id, {
             $set: {
                 ...req.body,
@@ -123,8 +141,12 @@ postRouter.put("/:id", async (req, res) => {
     }
 });
 
-postRouter.delete("/:id", async (req, res) => {
+postRouter.delete("/:id",passport.authenticate("jwt"), async (req, res) => {
     try {
+        const converted = new mongoose.Types.ObjectId(req.user._id)
+        if(!converted.equals(req.user._id)){
+            res.status(401).send("You do not have the authorization to add image for this post")
+        }
         const deletedPost = await Posts.findByIdAndDelete(req.params.id);
 
         if (deletedPost)
