@@ -33,6 +33,6 @@ passport.use(new JwtStrategy(jwtOptions, (jwtPayload, callback) =>{ // passport.
 }))
 
 module.exports = {
-    getToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 3600 }) //central point for token generation is here
+    getToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 3600 * 24 }) //central point for token generation is here
 }
 

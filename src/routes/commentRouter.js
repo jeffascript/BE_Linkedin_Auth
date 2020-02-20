@@ -1,6 +1,7 @@
 const express = require("express");
 const Comment = require("../models/CommentSchema");
 const Profiles = require("../models/profileSchema");
+const passport = require("passport")
 
 const commentRouter = express.Router();
 

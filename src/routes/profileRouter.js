@@ -84,8 +84,12 @@ profileRouter.get("/username/:username", passport.authenticate("jwt"), async (re
 });
 
 //get all experiences for a profile.username
-profileRouter.get("/:username/experiences", async (req, res) => {
+profileRouter.get("/:username/experiences",passport.authenticate("jwt"), async (req, res) => {
     try {
+        if(req.user.username!== req.params.username){
+            res.status(401).send("You can only get your experience")
+        }
+
         console.log(req.params.username);
         const profile = await Profiles.findOne(
             { username: req.params.username },
@@ -178,8 +182,8 @@ profileRouter.post(
         try {
             
     
-          const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
-          if(!stringifiedID.equals(req.user._id)){
+         
+          if(req.user.username !== req.params.username){
             return res.status(401).send("You can only edit your profile")
             
           }
@@ -221,9 +225,9 @@ profileRouter.put("/:id", passport.authenticate("jwt"), async (req, res) => {
 
     const stringifiedID = new mongoose.Types.ObjectId(req.user._id);
 
-    // if (req.user._id.toString() !== req.params.userId && req.user.role !== "Admin")
+    // if (req.user._id.toString() !== req.params.Id && req.user.role !== "Admin")
     // return res.status(401).send("cannot modify another user")
-    
+
     if (!stringifiedID.equals(req.user._id)) {
       return res.status(401).send("You can only edit your profile");
     }
@@ -231,15 +235,13 @@ profileRouter.put("/:id", passport.authenticate("jwt"), async (req, res) => {
     const profileForEdit = await Profiles.findByIdAndUpdate(req.params.id, {
       $set: req.body
 
-      //   $set: {
-
-      //     // ...req.body,
-      //     // updatedAt: new Date()
-      //   }
+      //  $set: {
+      // ...req.body,
+      //  updatedAt: new Date()
+      //  }
     });
 
-    res.send(profileForEdit);
-    
+    res.send("Updated");
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -249,28 +251,27 @@ profileRouter.put("/:id", passport.authenticate("jwt"), async (req, res) => {
 profileRouter.delete("/:id", passport.authenticate("jwt"), async (req, res) => {
     try {
 
+        const userID = await Profiles.findOne({userId: req.user._id})
+        console.log(userID.userId.toString())
+    
+        if(req.user._id.toString()!== userID.userId.toString()){
+            res.status(401).send("You can only edit your profile")
+        }
+    //   const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+    //   const stringifiedUserID = new mongoose.Types.ObjectId(userID.userId)
+    //   if(!stringifiedID.equals(stringifiedUserID)){
+    //     return res.status(401).send("You can only edit your profile") 
+    //   }
+
         const user = await Profiles.findById(req.params.id)
         if(!user){
-            return res.status(404).send("not found")
+            return res.status(404).send(`profile with id: ${req.params.id} not found for deletion!`)
         }
-
-      const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
-      if(!stringifiedID.equals(req.user._id)){
-        return res.status(401).send("You can only edit your profile")
-        
-      }
-
-
-
-
-
-        const deletedProfile = await Profiles.findByIdAndDelete(req.params.id);
-
-        if (deletedProfile) res.status(200).send(" Successffully Deleted");
-        else
-            res.status(404).send(
-                `profile with id: ${req.params.id} not found for deletion!`
-            );
+  
+         const deletedProfile = await Profiles.findByIdAndDelete(req.params.id);
+         if (deletedProfile) 
+            res.send(" Successffully Deleted");
+       
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
@@ -287,10 +288,8 @@ profileRouter.post("/experience/:username", passport.authenticate("jwt"),  async
             return res.status(404).send("user not found")
         }
 
-      const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
-      if(!stringifiedID.equals(req.user._id)){
+      if(req.user.username !== req.params.username){
         return res.status(401).send("You can only edit your profile")
-        
       }
 
         const newProject = req.body;
