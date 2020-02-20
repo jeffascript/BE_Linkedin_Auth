@@ -53,7 +53,7 @@ server.use("/comments", commentRoute)
 
 server.use("/users", usersRoute)
 
-
+// server.use( express.static(path.join(__dirname, "/images/posts/")))--> meaning get images from images/post directory but display at localhost/img.jpg
 server.get("/", (req,res)=>{
     res.send("server alive " + new Date ())
 })
