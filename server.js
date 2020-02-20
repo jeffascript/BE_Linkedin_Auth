@@ -36,7 +36,11 @@ server.use(cors())
  }
 */
 
-server.use(express.static(path.join(__dirname,"./images")))
+// server.use( express.static(path.join(__dirname, "/images/posts/")))--> meaning get images from images/post directory but display at localhost/img.jpg
+
+server.use("/images/posts/",express.static(path.join(__dirname,'/images/posts'))) // for post images
+
+server.use("/images/",express.static(path.join(__dirname,'/images/'))) //for profile images
 
 server.use("/profiles", profileRoute)
 server.use("/experiences", experienceRoute)

@@ -62,7 +62,7 @@ postRouter.post("/:username", passport.authenticate("jwt"), async (req, res) => 
             let reqUser = {...req.body, username}
             
             let newPost = await Posts.create(reqUser);
-            
+
         res.send({ success: "Post added", newPost });}
     } catch (error) {
         console.log(error)
@@ -87,19 +87,12 @@ postRouter.post(
                "post_" + req.params.id + path.extname(req.file.originalname);
 
             const newImageLocation = path.join(
-                __dirname,
-                "../../images/posts",
-                fileName
+                __dirname, "../../images/posts", fileName
             );
 
             await fs.writeFile(newImageLocation, req.file.buffer);
 
-            req.body.image =
-                req.protocol +
-                "://" +
-                req.get("host") +
-                "/images/posts/" +
-                fileName;
+            req.body.image = req.protocol + "://" + req.get("host") + "/images/posts/" + fileName;
 
             const newPostImg = await Posts.findOneAndUpdate(
                 { _id: req.params.id },
