@@ -29,7 +29,7 @@ usersRouter.post("/register", async (req, res) => {
       //send mail
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
-        to: process.env.RECIPIENT_EMAIL,
+        to: 'chijeffo@gmail.com',
         from: "test@example.com",
         subject: "Account confirmation -LinkedInMockup",
         text: "and easy to do anywhere, even with Node.js",
