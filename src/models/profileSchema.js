@@ -94,7 +94,8 @@ const profileSchema = new mongoose.Schema({
 
     experience: [experienceSchema],
 
-    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'usersList'}
+    userId: {type: mongoose.Schema.Types.ObjectId, ref: 'usersList'},
+    facebookId: {type: mongoose.Schema.Types.ObjectId, ref: 'usersList'}
 
   
 },{timestamps:true});

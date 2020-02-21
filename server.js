@@ -13,6 +13,7 @@ const postRoute = require("./src/routes/postRouter")
 const likesRoute = require("./src/routes/likesRouter")
 const commentRoute = require("./src/routes/commentRouter")
 const usersRoute = require("./src/routes/userRouter")
+const authRoute = require("./src/routes/authRouter")
 
 const server = express()
 server.use(express.json())
@@ -52,6 +53,7 @@ server.use("/likes", likesRoute)
 server.use("/comments", commentRoute)
 
 server.use("/users", usersRoute)
+server.use("/auth", authRoute)
 server.get("/", (req,res)=>{
     res.send("server alive " + new Date ())
 })

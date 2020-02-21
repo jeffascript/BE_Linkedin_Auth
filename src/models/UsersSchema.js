@@ -5,6 +5,9 @@ const { isEmail } = require("validator");
 
 
 const UsersSchema = new mongoose.Schema({
+    
+    
+
     firstname: {
         type: String,
         required: true
@@ -36,7 +39,13 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    }
+    },
+
+    facebookId: String,
+
+    refreshToken: String
+
+
     
 
 });
