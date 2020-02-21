@@ -72,15 +72,14 @@ postRouter.post("/:username", passport.authenticate("jwt"), async (req, res) => 
 
 //POST .../api/posts/{postId}
 postRouter.post(
-    "/:id/uploadImg",
+    "/:username/:id/uploadImg",
     multerConfig.single("image"), passport.authenticate("jwt"),
     async (req, res) => {
         try {
 
-            const converted = new mongoose.Types.ObjectId(req.user._id)
-            if(!converted.equals(req.user._id)){
-                res.status(401).send("You do not have the authorization to add image for this post")
-            }  
+            if(req.user.username !== req.params.username){
+                res.status(401).send({ Message: "Not authorized to post" });
+            }
 
 
             const fileName =
@@ -110,12 +109,14 @@ postRouter.post(
     }
 );
 
-postRouter.put("/:id",passport.authenticate("jwt"), async (req, res) => {
+postRouter.put("/:username/:id",passport.authenticate("jwt"), async (req, res) => {
     try {
-        const converted = new mongoose.Types.ObjectId(req.user._id)
-        if(!converted.equals(req.user._id)){
-            res.status(401).send("You do not have the authorization to add image for this post")
+       
+        if(req.user.username !== req.params.username){
+            res.status(401).send("You do not have the authorization to edit this post")
         }
+else{
+
 
         const postToEdit = await Posts.findByIdAndUpdate(req.params.id, {
             $set: {
@@ -124,30 +125,40 @@ postRouter.put("/:id",passport.authenticate("jwt"), async (req, res) => {
             }
         });
 
-        if (postToEdit)
-            res.status(200).send({ Message: "Updated!", post: req.body });
-
-        res.status(404).send(`Post with id: ${req.params.id} is not found !`);
+        if (!postToEdit){
+            res.status(404).send(`Post with id: ${req.params.id} is not found !`);
+        }
+        else{
+            res.send({ Message: "Updated!", post: req.body });
+        }
+    }
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
     }
 });
 
-postRouter.delete("/:id",passport.authenticate("jwt"), async (req, res) => {
+postRouter.delete("/:username/:id",passport.authenticate("jwt"), async (req, res) => {
     try {
-        const converted = new mongoose.Types.ObjectId(req.user._id)
-        if(!converted.equals(req.user._id)){
-            res.status(401).send("You do not have the authorization to add image for this post")
+       
+        if(req.user.username !== req.params.username){
+            res.status(401).send("You do not have the authorization to delete this post")
         }
+
+        else{
+
+        
         const deletedPost = await Posts.findByIdAndDelete(req.params.id);
 
-        if (deletedPost)
-            res.status(200).send({ Message: "Successfully Deleted" });
-
-        res.status(404).send({
-            Message: `Post with id: ${req.params.id} not found for deletion!`
-        });
+        if (!deletedPost){
+            res.status(404).send({
+                Message: `Post with id: ${req.params.id} not found for deletion!`
+            });
+        }
+            else{
+                res.status(200).send({ Message: "Successfully Deleted" });
+            }
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send(error);

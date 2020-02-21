@@ -12,7 +12,7 @@ const schema = {
         required: true
     },
 
-    post: {
+    postId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "posts",
         required: false

@@ -52,8 +52,6 @@ server.use("/likes", likesRoute)
 server.use("/comments", commentRoute)
 
 server.use("/users", usersRoute)
-
-// server.use( express.static(path.join(__dirname, "/images/posts/")))--> meaning get images from images/post directory but display at localhost/img.jpg
 server.get("/", (req,res)=>{
     res.send("server alive " + new Date ())
 })
@@ -68,6 +66,10 @@ console.log(listEndPoints(server))
 server.listen(port, ()=>console.log(`server running on ${port}`))
 
 
+// const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
+// if (!stringifiedID.equals(req.user._id)){
+// res.status(401).send("You do not have the authorization to edit this comment")
+// }
 
 
 
