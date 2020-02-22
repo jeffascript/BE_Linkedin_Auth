@@ -76,7 +76,7 @@ usersRouter.post("/register", async (req, res) => {
 usersRouter.get("/confirm/:token", async (req, res) => {
   try {
     if (req.params.token) {
-      res.redirect("http://localhost:3000/?confirm="+ req.params.token);
+      res.redirect("http://localhost:3000/callback/?confirm="+ req.params.token);
       // res.redirect('http://localhost:3000/?access_token=' + getToken({ _id: req.user._id}));
     } else {
       res.status(400).send(error);
