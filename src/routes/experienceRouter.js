@@ -198,45 +198,53 @@ else{
 
 //Image Post Upload
 experienceRouter.post(
-    "/:username/:experienceID/imgUpload",
-    multerConfig.single("imageUrl"),passport.authenticate("jwt"),
-    async (req, res) => {
-        try {
+  "/:username/:experienceID/imgUpload",
+  multerConfig.single("imageUrl"),
+  passport.authenticate("jwt"),
+  async (req, res) => {
+    try {
+      if (req.user.username !== req.params.username) {
+        res.status(401).send("cannot modify another user experience");
+      }
+else{
 
-            if(req.user.username !==req.params.username){
-                res.status(401).send("cannot modify another user experience")
-            }
-
-
+    const newExperienceUrl = await Profiles.findOne(
+        {
+            username: req.params.username,
+            "experience._id": req.params.experienceID
+        })
+        
+        if (newExperienceUrl) {
+            
             const fileName =
-            "expImg_" + req.params.username + path.extname(req.file.originalname);
-
-            const newImageLocation = path.join(
-                __dirname,
-                "../../images",
-                fileName
-            );
+              "expImg_" + req.params.username + path.extname(req.file.originalname);
+        
+            const newImageLocation = path.join(__dirname, "../../images", fileName);
             await fs.writeFile(newImageLocation, req.file.buffer);
-
+        
             req.body.imageUrl =
-                req.protocol + "://" + req.get("host") + "/images/" + fileName;
-
-            const newExperienceUrl = await Profiles.findOneAndUpdate(
-                {
-                    username: req.params.username,
-                    "experience._id": req.params.experienceID
-                },
-                { $set: { "experience.$.image": req.body.imageUrl } }
+              req.protocol + "://" + req.get("host") + "/images/" + fileName;
+        
+            await Profiles.findOneAndUpdate(
+              {
+                username: req.params.username,
+                "experience._id": req.params.experienceID
+              },
+              { $set: { "experience.$.image": req.body.imageUrl } }
             );
-            if (newExperienceUrl) {
-                res.status(200).send({ message: "Image URL updated" });
-            } else {
-                res.status(400).send({ message: "Not uploaded" });
-            }
-        } catch (ex) {
-            res.status(500).send(ex);
-        }
+
+
+            res.send({ message: "Image URL updated" });
+
+
+        } else {
+            res.status(400).send({ message: "Image Not uploaded" });
     }
+}
+    } catch (ex) {
+      res.status(500).send(ex);
+    }
+  }
 );
 
 module.exports = experienceRouter;
