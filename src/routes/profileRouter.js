@@ -291,6 +291,11 @@ profileRouter.post("/experience/:username", passport.authenticate("jwt"),  async
       if(req.user.username !== req.params.username){
         return res.status(401).send("You can only edit your profile")
       }
+        
+       
+
+        req.body._id = mongoose.Types.ObjectId()
+       
 
         const newProject = req.body;
         const addProfileExperience = await Profiles.findOneAndUpdate(
@@ -299,6 +304,8 @@ profileRouter.post("/experience/:username", passport.authenticate("jwt"),  async
                 $push: { experience: newProject }
             }
         );
+
+
         console.log(addProfileExperience.experience);
         res.send(newProject);
     } catch (error) {
