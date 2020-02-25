@@ -299,8 +299,8 @@ profileRouter.post("/experience/:username", passport.authenticate("jwt"),  async
                 $push: { experience: newProject }
             }
         );
-        console.log(addProfileExperience);
-        res.send(addProfileExperience);
+        console.log(addProfileExperience.experience);
+        res.send(newProject);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
