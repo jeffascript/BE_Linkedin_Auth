@@ -169,16 +169,23 @@ experienceRouter.delete("/:username/:expId", passport.authenticate("jwt"),async 
             res.status(401).send("cannot modify another user")
         }
 else{
+    
+    const deleted = await Profiles.findOne(
+        {
+            username: req.params.username,
+            "experience._id": req.params.expId
+        })
 
-    const deleted= await Profiles.findOneAndUpdate(
-         { username: req.params.username },
-         { $pull: { experience: { _id: req.params.expId } } },
+        if(deleted){
+            await Profiles.findOneAndUpdate(
+                { username: req.params.username },
+                { $pull: { experience: { _id: req.params.expId } } },
+                
+            );
+            res.send( "Deleted" );
+        }
+
          
-     );
-
-         if(deleted){
-             res.send({ Message: "Deleted" });
-         }
          else{
              res.status(500).send({ Message: "Error with deletion" })
          }
