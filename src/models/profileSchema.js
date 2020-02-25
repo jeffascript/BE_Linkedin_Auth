@@ -38,7 +38,7 @@ const experienceSchema = new mongoose.Schema({
     image: {
         type: String,
         required: false,
-        default: "https://via.placeholder.com/150"
+        default: "https://cdn0.iconfinder.com/data/icons/financial-business/512/company_building-512.png"
     }
 }, {timestamps:true});
 
