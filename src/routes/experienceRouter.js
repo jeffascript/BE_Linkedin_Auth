@@ -186,7 +186,7 @@ experienceRouter.delete("/:username/:expId", passport.authenticate("jwt"),async 
 
 //Image Post Upload
 experienceRouter.post(
-    "/:username/:experience/imgUpload",
+    "/:username/:experienceID/imgUpload",
     multerConfig.single("imageUrl"),passport.authenticate("jwt"),
     async (req, res) => {
         try {
@@ -212,7 +212,7 @@ experienceRouter.post(
             const newExperienceUrl = await Profiles.findOneAndUpdate(
                 {
                     username: req.params.username,
-                    "experience._id": req.params.experience
+                    "experience._id": req.params.experienceID
                 },
                 { $set: { "experience.$.image": req.body.imageUrl } }
             );

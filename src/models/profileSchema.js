@@ -83,7 +83,7 @@ const profileSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: false,
-        default: "https://via.placeholder.com/150"
+        default: "https://www.shareicon.net/data/512x512/2015/10/02/649910_user_512x512.png"
     },
 
     username: {
