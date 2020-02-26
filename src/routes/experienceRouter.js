@@ -127,32 +127,71 @@ experienceRouter.post("/:username/newExperience", passport.authenticate("jwt"),a
 
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 
-experienceRouter.put("/:username/:expId", async (req, res) => {
+experienceRouter.put("/:username/:expId", passport.authenticate("jwt"),async (req, res) => {
     try {
 
         if(req.user.username!== req.params.username){
             res.status(401).send("you can only edit your experience")
         }
+else{
 
-        const updateData = req.body;
-        const set = {};
+    console.log(req.params.username)
 
-        for (const field in updateData) {
-            set["experience.$." + field] = updateData[field];
+            const forEdit = await Profiles.findOne(
+        {
+            username: req.params.username,
+            "experience._id": req.params.expId
+        })
+
+if (forEdit){
+
+    const updateData = req.body;
+    const set = {};
+
+    for (const field in updateData) {
+        set["experience.$." + field] = updateData[field];
+    }
+   await Profiles.updateOne(
+        {
+            username: req.params.username,
+            "experience._id": req.params.expId
+        },
+        { $set: set }
+    );
+
+    res.send({ Message: "Updated", experience: req.body });
+}
+
+
+        
+        
+        else{
+            res.status(404).send({ message: "Not found any to update" });
+
         }
-        const experienceToEdit = await Profiles.updateOne(
-            {
-                username: req.params.username,
-                "experience._id": req.params.expId
-            },
-            { $set: set }
-        );
 
-        if (experienceToEdit)
-            res.send({ Message: "Updated", experience: req.body });
+        // const forEdit = await Profiles.findOne(
+    //     {
+    //         username: req.params.username,
+    //         "experience._id": req.params.expId
+    //     })
 
-        res.status(404).send({ message: "Not found any to update" });
+    //     if(forEdit){
+    //         await Profiles.findOneAndUpdate(
+    //             { username: req.params.username },
+    //             { $set: { experience: { _id: req.params.expId } } },
+                
+    //         );
+    //         res.send( "Updated" );
+    //     }
+
+         
+    //      else{
+    //          res.status(500).send({ Message: "Error with Update" })
+    //      }
+}
     } catch (err) {
+        console.log(err)
         res.status(500).send(err);
     }
 });
