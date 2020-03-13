@@ -166,7 +166,7 @@ profileRouter.post("/",passport.authenticate("jwt"), async (req, res) => {
 
         const newProfile = await Profiles.create(req.body);
 
-        newProfile.save();
+        //newProfile.save();
         res.send(newProfile);
     } catch (error) {
         res.status(500).send(error);
