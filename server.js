@@ -20,7 +20,7 @@ server.use(express.json())
 server.use(passport.initialize())
 const mongoose_db = require("./src/db")
 
-const port = process.env.PORT || 7001
+const Port = process.env.PORT || 7001
 
 server.use(cors())
 
@@ -65,7 +65,7 @@ server.get("/", (req,res)=>{
 
 console.log(listEndPoints(server))
 
-server.listen(port, ()=>console.log(`server running on ${port}`))
+server.listen(Port, ()=>console.log(`server running on ${Port}`))
 
 
 // const stringifiedID = new mongoose.Types.ObjectId(req.user._id)
