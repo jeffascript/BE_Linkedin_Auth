@@ -6,7 +6,6 @@ const listEndPoints = require("express-list-endpoints")
 const cors = require("cors")
 const path = require("path")
 
-
 const profileRoute = require("./src/routes/profileRouter")
 const experienceRoute = require("./src/routes/experienceRouter")
 const postRoute = require("./src/routes/postRouter")
@@ -21,6 +20,8 @@ server.use(passport.initialize())
 const mongoose_db = require("./src/db")
 
 const Port = process.env.PORT || 7001
+
+mongoose_db
 
 server.use(cors())
 
