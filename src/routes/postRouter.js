@@ -4,7 +4,7 @@ const Posts = require("../models/postSchema");
 const Profiles = require("../models/profileSchema");
 const multer = require("multer");
 const multerConfig = multer({});
-const path = require("path");p
+const path = require("path");
 const fs = require("fs-extra");
 // const mongoose = require("mongoose")
 
