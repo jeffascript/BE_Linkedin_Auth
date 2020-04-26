@@ -49,7 +49,7 @@ profileRouter.get("/:id", async (req, res) => {
     }
 });
 
-profileRouter.get("/username/:username", passport.authenticate("jwt"), async (req, res) => {
+profileRouter.get("/username/:username", async (req, res) => {
     try {
        
         let username = { username: req.params.username };
@@ -62,10 +62,7 @@ profileRouter.get("/username/:username", passport.authenticate("jwt"), async (re
             // const reqParam = req.params.username
             //console.log(reqUser +  " is equal to " + reqParam)
 
-            if(req.user.username !==req.params.username){
-            res.status(401).send("cannot modify another user")
-        }
-
+    
         // if (req.user._id.toString() !== req.params.userId && req.user.role !== "Admin")
         // return res.status(401).send("cannot modify another user")
 
@@ -84,12 +81,9 @@ profileRouter.get("/username/:username", passport.authenticate("jwt"), async (re
 });
 
 //get all experiences for a profile.username
-profileRouter.get("/:username/experiences",passport.authenticate("jwt"), async (req, res) => {
+profileRouter.get("/:username/experiences", async (req, res) => {
     try {
-        if(req.user.username!== req.params.username){
-            res.status(401).send("You can only get your experience")
-        }
-
+      
         console.log(req.params.username);
         const profile = await Profiles.findOne(
             { username: req.params.username },
