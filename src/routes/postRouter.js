@@ -59,11 +59,13 @@ postRouter.post("/:username", passport.authenticate("jwt"), async (req, res) => 
         }
 
         else{
-            let reqUser = {...req.body, username}
+            let reqUser = {...req.body, username, userInfo:profile._id}
             
-            let newPost = await Posts.create(reqUser);
-
-        res.send({ success: "Post added", newPost });}
+            let newPost = await Posts.create(reqUser)
+            newPost = await newPost.populate('userInfo').execPopulate();
+           
+        res.send(newPost)
+        }
     } catch (error) {
         console.log(error)
         res.status(500).send(error);
@@ -73,7 +75,7 @@ postRouter.post("/:username", passport.authenticate("jwt"), async (req, res) => 
 //POST .../api/posts/{postId}
 postRouter.post(
     "/:username/:id/uploadImg",
-    multerConfig.single("image"), passport.authenticate("jwt"),
+    multerConfig.single("post"), passport.authenticate("jwt"),
     async (req, res) => {
         try {
 
@@ -97,12 +99,15 @@ postRouter.post(
                 { _id: req.params.id },
                 {
                     $set: { image: req.body.image }
-                }
-            );
+                },
+                {
+                    new: true
+                   
+                }).populate({path:"userInfo", model:"profiles"});;
 
-            newPostImg.save();
-
-            res.send("Image URL updated");
+            // newPostImg.save();
+                console.log(newPostImg,"image uploaded")
+            res.send(newPostImg);
         } catch (ex) {
             res.status(500).send({ Message: "Internal server error", err: ex });
         }
@@ -122,14 +127,19 @@ else{
             $set: {
                 ...req.body,
                 updatedAt: new Date()
+                
             }
-        });
+        }, {
+            new:true
+        })
+        // .populate("userInfo");
+         .populate({path:"userInfo", model:"profiles"});
 
         if (!postToEdit){
             res.status(404).send(`Post with id: ${req.params.id} is not found !`);
         }
         else{
-            res.send({ Message: "Updated!", post: req.body });
+            res.send(postToEdit);
         }
     }
     } catch (error) {

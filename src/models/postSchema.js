@@ -24,10 +24,15 @@ const schema = {
         ref: "profiles"
         
     },
+    userInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "profiles"
+        
+    },
 
     image: {
         type: String,
-        default: "https://via.placeholder.com/150",
+        // default: "https://via.placeholder.com/150",
         required: false
     },
     // createdAt: {
