@@ -14,7 +14,7 @@ postRouter.get("/", async (req, res) => {
     const postsCount = await Posts.countDocuments();
 
     try {
-        const posts = await Posts.find({});
+        const posts = await Posts.find({}).populate({path:"userInfo", model:"profiles"});
 
         if (!posts || posts.length <= 0) {
           res.status(404).send({ message: "No posts found" });
@@ -103,7 +103,7 @@ postRouter.post(
                 {
                     new: true
                    
-                }).populate({path:"userInfo", model:"profiles"});;
+                }).populate({path:"userInfo", model:"profiles"});
 
             // newPostImg.save();
                 console.log(newPostImg,"image uploaded")

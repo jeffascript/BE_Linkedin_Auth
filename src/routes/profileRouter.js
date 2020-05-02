@@ -182,10 +182,11 @@ profileRouter.post(
             
           }
     
-
+          let timeNow = new Date().toISOString()
+          let unique =  timeNow.split("T")[1]      
 
             const fileName =
-                req.params.username + path.extname(req.file.originalname);
+                req.params.username + unique +  path.extname(req.file.originalname);
 
             const newImageLocation = path.join(__dirname,"../../images",fileName);
             await fs.writeFile(newImageLocation, req.file.buffer);

@@ -5,8 +5,9 @@ const mongoose = require("mongoose");
 const reactionSchema = {
     likedBy:  {
           type: String,
-          unique:true,
-        
+        //   index:true, 
+        //   unique:true,
+        //   sparse:true
       }
   };
 
