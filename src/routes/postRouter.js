@@ -28,6 +28,8 @@ postRouter.get("/", async (req, res) => {
     }
 });
 
+
+
 postRouter.get("/:id", async (req, res) => {
     try {
         const post = await Posts.findById(req.params.id);

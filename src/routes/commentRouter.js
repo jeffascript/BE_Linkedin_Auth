@@ -10,11 +10,12 @@ const commentRouter = express.Router();
 
 commentRouter.get("/:postId", async (req, res) => {
   try {
-    const comment = await Comment.find({ postId: req.params.postId }).exec(
+     await Comment.find({ postId: req.params.postId }).populate("userInfo").exec(
       (err, comments) => {
         if (err) {
           res.send(err);
         } else {
+          comments
           res.status(200).send({
             total_comments: comments.length,
             comments: comments
@@ -38,7 +39,7 @@ commentRouter.post(
           .status(401)
           .send("Sorry, you lack the authorization to make this comment");
       } else {
-        await Profiles.findOne(
+       await Profiles.findOne(
           { username: req.params.username },
           (err, username) => {
             if (username) {
@@ -46,12 +47,14 @@ commentRouter.post(
                 {
                   username: req.params.username,
                   postId: req.params.postId,
-                  comment: req.body.comment
+                  comment: req.body.comment,
+                  userInfo: username._id
                 },
                 (err, resp) => {
                   if (err) {
                     res.send(err);
                   } else {
+                    resp.populate('userInfo').execPopulate()
                     res.status(200).send({
                       comment: resp
                     });
@@ -74,10 +77,10 @@ commentRouter.post(
 
 commentRouter.get("/:postId/comment/:commentId", async (req, res) => {
   try {
-    const comment = await Comment.findOne({
+    await Comment.findOne({
       postId: req.params.postId,
       _id: req.params.commentId
-    }).exec((err, comment) => {
+    }).populate("userInfo").exec((err, comment) => {
       if (err) {
         res.send(err);
       } else {
@@ -108,8 +111,8 @@ commentRouter.put(
             _id: req.params.commentId,
             postId: req.params.postId
           },
-          { $set: { comment: req.body.comment } }
-        );
+          { $set: { comment: req.body.comment } },{new: true}
+        ).populate("userInfo");
         if (!updateComment) {
           res.status(404).send({ message: "Not found any to update" });
         } else {

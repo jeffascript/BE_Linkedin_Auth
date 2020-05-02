@@ -6,6 +6,11 @@ const schema = {
         required: true
     },
 
+    userInfo:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "profiles"
+    },
+    
     username: {
         type: mongoose.Schema.Types.String,
         ref: "profiles",
