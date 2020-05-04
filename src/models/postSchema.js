@@ -4,11 +4,17 @@ const mongoose = require("mongoose");
 
 const reactionSchema = {
     likedBy:  {
-          type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "profiles"
+        //   type: String,
         //   index:true, 
         //   unique:true,
         //   sparse:true
+      },
+      userID:{
+          type: mongoose.Schema.Types.ObjectId
       }
+
   };
 
   

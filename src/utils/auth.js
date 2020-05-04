@@ -93,6 +93,6 @@ passport.use(new FacebookStrategy({
 
 
 module.exports = {
-    getToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 3600 * 24 }) //central point for token generation is here
+    getToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 3600 * 240 }) //central point for token generation is here
 }
 
