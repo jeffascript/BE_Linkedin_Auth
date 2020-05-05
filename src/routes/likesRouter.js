@@ -1,8 +1,8 @@
 const express = require("express");
 const Profiles = require("../models/profileSchema");
 const Posts = require("../models/postSchema");
-const path = require("path");
-const fs = require("fs-extra");
+// const path = require("path");
+// const fs = require("fs-extra");
 const passport = require("passport");
 const likeRouter = express.Router();
 
@@ -24,7 +24,7 @@ likeRouter.get("/:id", async (req, res) => {
         let youLike = false;
         if(req.query.userId){
            const { userId } = req.query
-           console.log(userId, "req query")
+          //  console.log(userId, "req query")
            let posts = postExists.toObject()
         
           const upVotedByUser = posts.reactions.some( ({ userID }) => userID == userId)
@@ -40,11 +40,11 @@ likeRouter.get("/:id", async (req, res) => {
         res.send({ isLikedByUser:youLike,  reactionsCount: likesCount.length, postInfo });
        
       } else {
-        res.send({message: "No reactions yet"});
+        res.status(404).send("No reactions yet");
       }
     }
     else{
-      res.status(404).send("This post does not exist");
+      res.status(401).send("This post does not exist");
     }
   } catch (error) {
     console.log(error);
@@ -66,7 +66,7 @@ likeRouter.post(
       const { postID } = req.params;
       const checkForID = await Posts.findById(postID);
       if (!checkForID) {
-        res.status(404).send({ message: "No post for reaction" });
+        res.status(404).send("No post for reaction" );
       } else {
         const user = await Profiles.findOne({username: req.params.username})
      
