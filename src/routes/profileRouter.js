@@ -8,7 +8,8 @@ const profileRouter = express.Router();
 const generatePDF = require("../pdfConfig/pdfCreator");
 const json2csv = require("json2csv").parse;
 const mongoose = require("mongoose")
-
+const { uploadMulterToCloudinary, breakpoints, cloudConfig } = require("../middleware/cloudImageUploader")
+const cloudinary = require('cloudinary').v2
 
 //  profileRouter.get("/", Profile.getAll);
 
@@ -167,11 +168,12 @@ profileRouter.post("/",passport.authenticate("jwt"), async (req, res) => {
         console.log(error);
     }
 });
+// uploadMulterToCloudinary, breakpoints, cloudConfig
 
 const multerConfig = multer({});
 profileRouter.post(
     "/:username/picture",
-    multerConfig.single("profileImg"), passport.authenticate("jwt"), 
+    uploadMulterToCloudinary.single("profileImg"), passport.authenticate("jwt"), 
     async (req, res) => {
         try {
             
@@ -182,26 +184,32 @@ profileRouter.post(
             
           }
     
-          let timeNow = new Date().toISOString()
-          let unique =  timeNow.split("T")[1]      
+                //   let timeNow = new Date().toISOString()
+                //   let unique =  timeNow.split("T")[1]      
 
-            const fileName =
-                req.params.username + unique +  path.extname(req.file.originalname);
+            // const fileName =
+            //     req.params.username + unique +  path.extname(req.file.originalname);
 
-            const newImageLocation = path.join(__dirname,"../../images",fileName);
-            await fs.writeFile(newImageLocation, req.file.buffer);
+            // const newImageLocation = path.join(__dirname,"../../images",fileName);
+            // await fs.writeFile(newImageLocation, req.file.buffer);
 
-            req.body.imageUrl = req.protocol + "://" + req.get("host") + "/images/" + fileName;
+            // req.body.imageUrl = req.protocol + "://" + req.get("host") + "/images/" + fileName;
+
+            cloudConfig
+            const newImage =   await cloudinary.uploader.upload(req.file.path,breakpoints)
+            let newimageUrl = `${newImage.secure_url}`
 
             const newProfileUrl = await Profiles.findOneAndUpdate(
                 { username: req.params.username },
                 {
-                    $set: { imageUrl: req.body.imageUrl }
+                    $set: { imageUrl: newimageUrl}
+                }, {
+                    new: true
                 }
             );
 
-            newProfileUrl.save();
-            res.send("Image URL updated");
+            // newProfileUrl.save();
+            res.send({msg:"Image URL updated", imgUrl:newimageUrl});
         } catch (ex) {
             res.status(500).send(ex);
             console.log(ex);

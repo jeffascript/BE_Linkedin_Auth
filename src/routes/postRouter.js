@@ -7,6 +7,8 @@ const multerConfig = multer({});
 const path = require("path");
 const fs = require("fs-extra");
 // const mongoose = require("mongoose")
+const { uploadMulterToCloudinary, breakpoints, cloudConfig } = require("../middleware/cloudImageUploader")
+const cloudinary = require('cloudinary').v2
 
 const postRouter = express.Router();
 
@@ -77,7 +79,7 @@ postRouter.post("/:username", passport.authenticate("jwt"), async (req, res) => 
 //POST .../api/posts/{postId}
 postRouter.post(
     "/:username/:id/uploadImg",
-    multerConfig.single("post"), passport.authenticate("jwt"),
+    uploadMulterToCloudinary.single("post"), passport.authenticate("jwt"),
     async (req, res) => {
         try {
 
@@ -86,21 +88,26 @@ postRouter.post(
             }
 
 
-            const fileName =
-               "post_" + req.params.id + path.extname(req.file.originalname);
+            // const fileName =
+            //    "post_" + req.params.id + path.extname(req.file.originalname);
 
-            const newImageLocation = path.join(
-                __dirname, "../../images/posts", fileName
-            );
+            // const newImageLocation = path.join(
+            //     __dirname, "../../images/posts", fileName
+            // );
 
-            await fs.writeFile(newImageLocation, req.file.buffer);
+            // await fs.writeFile(newImageLocation, req.file.buffer);
 
-            req.body.image = req.protocol + "://" + req.get("host") + "/images/posts/" + fileName;
+            // req.body.image = req.protocol + "://" + req.get("host") + "/images/posts/" + fileName;
+
+            cloudConfig
+            const newImage =   await cloudinary.uploader.upload(req.file.path,breakpoints)
+            let newimageUrl = `${newImage.secure_url}`
+
 
             const newPostImg = await Posts.findOneAndUpdate(
                 { _id: req.params.id },
                 {
-                    $set: { image: req.body.image }
+                    $set: { image: newimageUrl}
                 },
                 {
                     new: true

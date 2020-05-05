@@ -40,7 +40,7 @@ likeRouter.get("/:id", async (req, res) => {
         res.send({ isLikedByUser:youLike,  reactionsCount: likesCount.length, postInfo });
        
       } else {
-        res.status(404).send("No reactions yet");
+        res.send("No reactions yet");
       }
     }
     else{
