@@ -1,7 +1,7 @@
 const express = require("express")
 const passport = require("passport")
 
-const {getToken} = require("../utils/auth")
+const { getToken } = require("../utils/auth")
 
 const authsRouter = express.Router()
 
