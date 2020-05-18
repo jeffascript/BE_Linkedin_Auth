@@ -12,14 +12,15 @@ usersRouter.post("/register", async (req, res) => {
     const newUser = await UserModel.register(req.body, req.body.password);
     // const newUser = await UserModel.register(...req.body, {password:bcrypt.hashSync(password, 5)});
     if (newUser) {
-      const { firstname, surname, area, email, username } = req.body;
+      const { firstname, surname, area, email, username, title } = req.body;
       const newProfile = await Profiles.create({
         firstname: firstname,
         surname: surname,
         area: area,
         email: email,
         username: username,
-        userId: newUser._id
+        userId: newUser._id,
+        title 
       });
 
       newProfile.save();
@@ -31,9 +32,9 @@ usersRouter.post("/register", async (req, res) => {
       const msg = {
         to: email,
         from: process.env.EMAIL,
-        subject: "Account confirmation -LinkedInMockup",
+        subject: "Account confirmation - LinkedInMockup",
         text: "and easy to do anywhere, even with Node.js",
-        html: `<strong>confirm your account here <a href="${req.protocol}://${req.get("host")}/users/confirm/${token}"> see here </a></strong>`
+        html: `<strong> Hello ${surname}, <br /> Please confirm your mockup by clicking on this link <a href="${req.protocol}://${req.get("host")}/users/confirm/${token}"> activate account  </a></strong>`
       };
       await sgMail.send(msg);
 
