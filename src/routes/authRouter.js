@@ -13,7 +13,7 @@ authsRouter.get('/facebook/callback',
 passport.authenticate('facebook', { failureRedirect: '/login' }),
 function(req, res) {
   // Successful authentication, redirect home.
-  res.redirect('http://localhost:3000/callback?access_token=' + getToken({ _id: req.user._id}));
+  res.redirect(process.env.FE_URL +'/callback?access_token=' + getToken({ _id: req.user._id,username: req.user.username}) + "&username=" + req.user.username);
 });
 
 {/* <a href="${req.protocol}://${req.get("host")}/users/confirm/${token}"> */}

@@ -39,15 +39,15 @@ passport.use(new JwtStrategy(jwtOptions, (jwtPayload, callback) =>{ // passport.
 passport.use(new FacebookStrategy({
     clientID: process.env.FB_ID,
     clientSecret: process.env.FB_KEY,
-    callbackURL: "http://localhost:7000/auth/facebook/callback", 
-    // `${req.protocol}://${req.get("host")}/auth/facebook/callback`
+    callbackURL: `${process.env.BE_URL}/auth/facebook/callback`, 
+    //"http://localhost:7000/auth/facebook/callback"  `${req.protocol}://${req.get("host")}/auth/facebook/callback`
     profileFields: ["id","first_name","email","location","last_name","picture"]
   
   },
   async (accessToken, refreshToken, facebookProfile, next) =>{
     try{
-        const userFromFacebookId = await UsersModel.findOne({ facebookId: facebookProfile.id}) //search for a user with a give fbid
-        console.log(facebookProfile)
+        const userFromFacebookId = await UsersModel.findOne({  email: facebookProfile.emails[0].value}) //search for a user with a give fbid & email
+        // console.log(facebookProfile)
         if (userFromFacebookId) //if we have a user we return the user
             return next(null, userFromFacebookId)
         else //we create a user starting from facebook data!
@@ -56,7 +56,7 @@ passport.use(new FacebookStrategy({
             const newUser = await UsersModel.create({
       
                 facebookId: facebookProfile.id,
-                username: facebookProfile.emails[0].value,
+                username: `${facebookProfile.name.givenName}.${facebookProfile.name.familyName}`,
                 firstname: facebookProfile.name.givenName,
                 surname: facebookProfile.name.familyName,
                 area: facebookProfile._json.location.name,
@@ -71,7 +71,7 @@ passport.use(new FacebookStrategy({
                 surname: facebookProfile.name.familyName,
                 area: facebookProfile._json.location.name,
                 email: facebookProfile.emails[0].value,
-                username: facebookProfile.emails[0].value,
+                username: `${facebookProfile.name.givenName}.${facebookProfile.name.familyName}`,
                 imageUrl:facebookProfile.photos[0].value,
                 facebookId: facebookProfile.id,
                 userId: newUser._id
@@ -93,6 +93,6 @@ passport.use(new FacebookStrategy({
 
 
 module.exports = {
-    getToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 3600 * 240 }) //central point for token generation is here
+    getToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 3600 * 340 }) //central point for token generation is here
 }
 
